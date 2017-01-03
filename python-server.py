@@ -26,10 +26,17 @@ class MainHandler(BaseHTTPRequestHandler):
             contentType = 'text/html'
             if self.path.startswith("/server/"):
                 module = self.path.split('=')[1]
-                output = subprocess.Popen(
-                    serverPath + modulesSubPath + module + '.sh',
-                    shell = True,
-                    stdout = subprocess.PIPE)
+                output = None
+                if os.name == 'nt':
+                    output = subprocess.Popen(
+                        ["powershell.exe", serverPath + modulesSubPath + module + '.ps1'],
+                        shell = False,
+                        stdout = subprocess.PIPE)
+                else:
+                    output = subprocess.Popen(
+                        serverPath + modulesSubPath + module + '.sh',
+                        shell = True,
+                        stdout = subprocess.PIPE)
                 data = output.communicate()[0]
             else:
                 if self.path == '/':

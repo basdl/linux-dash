@@ -7,6 +7,8 @@ from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer, test as _test
 import subprocess
 from SocketServer import ThreadingMixIn
 import argparse
+import glob
+import json
 
 
 parser = argparse.ArgumentParser(description='Simple Threaded HTTP server to run linux-dash.')
@@ -15,6 +17,12 @@ parser.add_argument('--port', metavar='PORT', type=int, nargs='?', default=80,
 
 modulesSubPath = '/server/modules/shell_files/'
 serverPath = os.path.dirname(os.path.realpath(__file__))
+allModules = glob.glob(serverPath + modulesSubPath + "*.sh")
+with open("js" + os.sep + "config.js", "w") as f:
+    f.write("var availableModules = ")
+    json.dump([os.path.splitext(os.path.basename(m))[0] for m in allModules], f)
+    f.write(";")
+
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     pass

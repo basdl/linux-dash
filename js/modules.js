@@ -6,7 +6,23 @@
   ////////////////// Module Directives /////////////////// //
   ///////////////////////////////////////////////////////////
 
-  angular.module('linuxDash').directive('diskSpace', ['server', function(server) {
+  function toModuleName(name)
+  {
+    return name.replace(/[A-Z]/g, "_$&").toLowerCase()
+  }
+
+  function registerModule(name, params)
+  {
+    if(availableModules.indexOf(toModuleName(name)) != -1)
+    {
+      return angular.module('linuxDash').directive(name, params);
+    }
+    else
+      console.log("couldnt find " + name);
+    return undefined;
+  }
+
+  registerModule('diskSpace', ['server', function(server) {
     return {
       restrict: 'E',
       scope: {},
@@ -16,7 +32,7 @@
         scope.heading = "Disk Partitions";
 
         scope.getData = function() {
-          server.get('disk_partitions', function(serverResponseData) {
+          server.get('disk_space', function(serverResponseData) {
             scope.diskSpaceData = serverResponseData;
           });
 
@@ -52,7 +68,7 @@
     };
   }]);
 
-  angular.module('linuxDash').directive('ramChart', ['server', function(server) {
+  registerModule('ramChart', ['server', function(server) {
     return {
       restrict: 'E',
       scope: {},
@@ -61,7 +77,7 @@
 
         // get max ram available on machine before we
         // can start charting
-        server.get('current_ram', function(resp) {
+        server.get('ram_chart', function(resp) {
           scope.maxRam = resp.total;
           scope.minRam = 0;
         });
@@ -110,7 +126,7 @@
     };
   }]);
 
-  angular.module('linuxDash').directive('cpuAvgLoadChart', ['server', function(server) {
+  registerModule('cpuLoad', ['server', function(server) {
     return {
       restrict: 'E',
       scope: {},
@@ -120,7 +136,8 @@
       }
     };
   }]);
-  angular.module('linuxDash').directive('cpuTemp', ['server', function(server) {
+  
+  registerModule('cpuTemp', ['server', function(server) {
     return {
       restrict: 'E',
       scope: {},
@@ -134,7 +151,7 @@
         };
 
         scope.utilMetrics = [{
-          name: 'Temprature',
+          name: 'Temperature',
           generate: function(serverResponseData) {
             return serverResponseData + ' °C';
           }
@@ -144,7 +161,7 @@
     };
   }]);
 
-  angular.module('linuxDash').directive('cpuUtilizationChart', ['server', function(server) {
+  registerModule('cpuUtilization', ['server', function(server) {
     return {
       restrict: 'E',
       scope: {},
@@ -168,7 +185,7 @@
     };
   }]);
 
-  angular.module('linuxDash').directive('uploadTransferRateChart', ['server', function(server) {
+  registerModule('uploadTransferRate', ['server', function(server) {
     return {
       restrict: 'E',
       scope: {},
@@ -180,7 +197,7 @@
     };
   }]);
 
-  angular.module('linuxDash').directive('downloadTransferRateChart', ['server', function(server) {
+  registerModule('downloadTransferRate', ['server', function(server) {
     return {
       restrict: 'E',
       scope: {},
@@ -197,7 +214,7 @@
   //////////////////////////////////////////////////////////
   var simpleTableModules = [
     {
-      name: 'machineInfo',
+      name: 'generalInfo',
       template: '<key-value-list heading="General Info." module-name="general_info" info="System Information"></key-value-list>'
     },
     {
@@ -221,19 +238,19 @@
       template: '<table-data heading="Network Connections" module-name="network_connections"></table-data>'
     },
     {
-      name: 'serverAccounts',
+      name: 'userAccounts',
       template: '<table-data heading="Accounts" module-name="user_accounts" info="User accounts on this server."></table-data>'
     },
     {
-      name: 'loggedInAccounts',
+      name: 'loggedInUsers',
       template: '<table-data heading="Logged In Accounts" module-name="logged_in_users" info="Users currently logged in."></table-data>'
     },
     {
-      name: 'recentLogins',
+      name: 'recentAccountLogins',
       template: '<table-data heading="Recent Logins" module-name="recent_account_logins" info="Recent user sessions."></table-data>'
     },
     {
-      name: 'arpCacheTable',
+      name: 'arpCache',
       template: '<table-data heading="ARP Cache Table" module-name="arp_cache"></table-data>'
     },
     {
@@ -241,7 +258,7 @@
       template: '<table-data heading="Common Applications" module-name="common_applications" info="List of commonly installed applications."></table-data>'
     },
     {
-      name: 'pingSpeeds',
+      name: 'ping',
       template: '<table-data heading="Ping Speeds" module-name="ping" info="Ping speed in milliseconds."></table-data>'
     },
     {
@@ -249,7 +266,7 @@
       template: '<table-data heading="Bandwidth" module-name="bandwidth"></table-data>'
     },
     {
-      name: 'swapUsage',
+      name: 'swap',
       template: '<table-data heading="Swap Usage" module-name="swap"></table-data>'
     },
     /*{
@@ -293,14 +310,14 @@
       template: '<table-data heading="Cron Job History" module-name="cron_history" info="Crons which have run recently."></table-data>'
     },
     {
-      name: 'raidStats',
+      name: 'raidStatus',
       template: '<table-data heading="RAID Sats" module-name="raid_status" info="RAID Status from /proc/mdstats"></table-data>'
     },
   ];
 
   simpleTableModules.forEach(function(module, key) {
 
-    angular.module('linuxDash').directive(module.name, ['server', function(server) {
+    registerModule(module.name, ['server', function(server) {
 
       var moduleDirective = {
         restrict: 'E',

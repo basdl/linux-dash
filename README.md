@@ -121,4 +121,3 @@ The following distributions are supported:
 * Linux Mint 16+
 * CentOS 5, 6
 * openSUSE
-* Windows (Prerequisite PowerShell >= 5, usable with python server)

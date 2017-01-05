@@ -17,7 +17,7 @@ parser.add_argument('--port', metavar='PORT', type=int, nargs='?', default=80,
 
 modulesSubPath = '/server/modules/shell_files/'
 serverPath = os.path.dirname(os.path.realpath(__file__))
-allModules = glob.glob(serverPath + modulesSubPath + "*.sh")
+allModules = glob.glob(serverPath + modulesSubPath + ("*.ps1" if os.name == 'nt' else "*.sh"))
 with open("js" + os.sep + "config.js", "w") as f:
     f.write("var availableModules = ")
     json.dump([os.path.splitext(os.path.basename(m))[0] for m in allModules], f)

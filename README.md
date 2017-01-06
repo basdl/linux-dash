@@ -121,3 +121,5 @@ The following distributions are supported:
 * Linux Mint 16+
 * CentOS 5, 6
 * openSUSE
+
+Apart from that you can start the dashboard on Windows with PowerShell >= 5.1 by running `./python-server.py`.
